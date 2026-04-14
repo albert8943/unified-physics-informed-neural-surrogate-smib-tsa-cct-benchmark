@@ -1,0 +1,123 @@
+# Data Generation Configuration for PINN Training
+# This file configures the SMIB training data generation process
+
+# System Configuration
+system:
+  case_file: "smib/SMIB.json"
+  generator_model: "GENCLS"  # Only GENCLS supported
+  base_mva: 100.0  # System base MVA
+
+# Input method selection
+input_method:
+  use_pe_as_input: false  # true = Pe(t) as input, false = reactances
+  # When use_pe_as_input=true:
+  #   - Extract Pe(t) from ANDES
+  #   - No reactance extraction needed
+  #   - Input dimension: 7 [t, δ₀, ω₀, H, D, alpha, Pe(t)] (uses alpha for unified load variation)
+  # When use_pe_as_input=false:
+  #   - Extract reactances (existing behavior)
+  #   - Input dimension: 11 [t, δ₀, ω₀, H, D, Pm, Xprefault, Xfault, Xpostfault, tf, tc]
+
+# Parameter Ranges
+parameter_ranges:
+  # NEW: Unified alpha multiplier (recommended - works for SMIB and multimachine)
+  # Alpha scales all loads uniformly: P' = alpha × P_base, Q' = alpha × Q_base
+  # Maintains power factor (industrial standard for TSA)
+  # Format: [min, max, num_points] for full factorial, or [min, max] for Sobol sampling
+  alpha: [0.4, 1.2, 10]  # Range: 0.4 to 1.2 (40% to 120% of base load), 10 points
+  # DEPRECATED: load, use_load_variation (kept for backward compatibility)
+  load: [0.4, 0.9, 6]  # DEPRECATED: Use alpha instead
+  load_q: null  # DEPRECATED: Q is now scaled by same alpha (maintains power factor)
+  use_load_variation: true  # DEPRECATED: alpha_range implies load variation
+  # OLD: Pm variation (alternative approach - commented out)
+  # Pm: [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+  M: [3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+  D: [0.5, 1.0, 1.5, 2.0, 2.5]
+
+# Sampling Strategy
+sampling:
+  strategy: "full_factorial"  # or "lhs", "sobol", "decorrelated"
+  max_correlation: 0.3  # for parameter estimation
+  n_samples: null  # null = full factorial
+  task: "trajectory"  # or "parameter_estimation", "cct"
+
+  # Samples per combination configuration
+  # IMPORTANT: 2 samples per combination is MINIMAL and may not be sufficient for PINN training
+  # Recommended values:
+  #   - CCT task: 3-4 samples (2 at CCT boundary + 1-2 nearby)
+  #   - Trajectory task: 5-10 samples (multiple clearing times for better coverage)
+  #   - Parameter estimation: 5-8 samples (diverse operating conditions)
+  n_samples_per_combination: 4  # Default: 4 (recommended minimum)
+
+  # For CCT task: additional clearing time offsets from CCT (in seconds)
+  # Default: [-0.05, 0.05] for n_samples_per_combination >= 4
+  # Example for 6 samples: [-0.10, -0.05, 0.05, 0.10]
+  additional_clearing_time_offsets: [-0.05, 0.05]
+
+  # For Trajectory task: clearing times to use
+  # If use_cct_based_sampling=true, these are offsets from CCT
+  # If use_cct_based_sampling=false, these are absolute clearing times
+  clearing_times: null  # null = auto-generate based on CCT
+  use_cct_based_sampling: true  # Recommended: true (better boundary coverage)
+
+# Fault Parameters
+fault:
+  start_time: 1.0
+  bus: 3
+  reactance: 0.0001  # bolted fault
+  type: "3phase"  # only 3-phase supported
+
+# Simulation Parameters
+simulation:
+  time: 5.0
+  time_step: 0.001
+  tolerance: 1e-4
+
+# CCT Finding
+cct_finding:
+  tolerance_initial: 0.01
+  tolerance_final: 0.001
+  max_iterations: 50
+  uncertainty_samples: 10
+  use_eac_validation: true
+
+# Data Quality Thresholds
+data_quality:
+  min_completeness: 0.95
+  max_correlation: 0.3
+  stability_balance_range: [0.4, 0.6]
+  real_time_tracking: true
+  early_stopping: false  # pause if quality drops
+
+# Parallel Processing
+parallel:
+  enabled: false  # Set to false for complete data export (sequential mode)
+  n_jobs: 4
+  batch_size: 10
+
+# Checkpointing
+checkpointing:
+  enabled: true
+  frequency: 1  # after each operating point
+  checkpoint_dir: "checkpoints"
+
+# Data Export
+export:
+  formats: ["hdf5", "csv"]
+  include_metadata: true
+  data_version: "1.0.0"
+  schema_validation: true
+
+# Error Handling
+error_handling:
+  retry_failed: true
+  max_retries: 2
+  retry_time_step_reduction: 0.5  # h/2
+  log_errors: true
+  error_log_file: "error_log.txt"
+
+# Multi-Machine Configuration
+multimachine:
+  enabled: false
+  use_pe_as_input: true  # Extract Pe_i(t) for each machine
+  per_machine_pe: true  # Extract Pe_i(t) for each machine

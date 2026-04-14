@@ -1,0 +1,44 @@
+# ANDES Power System Simulation Toolbox
+# ======================================
+# 
+# ANDES is required for power system simulation and data generation.
+# It is typically installed separately via conda or pip.
+#
+# IMPORTANT: Python Version Requirements
+# ---------------------------------------
+# - ANDES 1.10.0 (latest): Requires Python >= 3.10
+# - ANDES 1.9.3 (previous stable): Works with Python >= 3.8
+#
+# Installation:
+# -------------
+# Option 1: Via pip (recommended for Python >= 3.10)
+#   pip install andes==1.10.0
+#   # or for Python < 3.10:
+#   pip install andes  # Installs 1.9.3 automatically
+#
+# Option 2: Via conda (recommended for better dependency management)
+#   conda install -c conda-forge andes
+#
+# Option 3: Install latest version (auto-detects Python version)
+#   pip install andes
+#
+# Version Compatibility:
+# ----------------------
+# This project supports both ANDES 1.9.3 and 1.10.0.
+# The code includes fallback mechanisms for different ANDES versions.
+#
+# For detailed version information, see:
+# - docs/guides/ANDES_VERSION_INFO.md
+# - docs/guides/ANDES_ENVIRONMENTS_SUMMARY.md
+#
+# Note: ANDES dependencies (numpy, scipy, pandas, etc.) are already
+# included in requirements.txt. This file is for reference only.
+
+# Uncomment the line below to explicitly install ANDES via pip:
+# andes>=1.9.3,<1.11.0
+
+# For ANDES 1.10.0 specifically (requires Python >= 3.10):
+# andes==1.10.0
+
+# For ANDES 1.9.3 (works with Python >= 3.8):
+# andes==1.9.3

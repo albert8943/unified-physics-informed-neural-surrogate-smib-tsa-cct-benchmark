@@ -1,0 +1,154 @@
+# SMIB: hybrid — legacy strong ML baseline + PINN recipe from pinn_ml_fair_loss_tune.yaml.
+# Not a strict fair head-to-head (ML: pe_direct_7 + separate scaling vs PINN: pe_direct + publication-style loss).
+#
+# File layout (same top-level keys the runner expects):
+#   reproducibility, data, evaluation  — shared
+#   model, training, loss              — PINN-first; ML reuses some training keys and loss.lambda_ic only
+#   ml_baseline                        — ML architecture, WD, scaling, early-stop, supervised extras
+#
+# Sources:
+#   PINN: configs/experiments/smib/pinn_ml_fair_loss_tune.yaml
+#   ML:   configs/legacy/smib_best_ml_baseline.yaml
+#
+# Example:
+#   python scripts/run_complete_experiment.py ^
+#     --config configs/experiments/smib/smib_combine_legacy_ml_and_pinn_tune.yaml ^
+#     --skip-data-generation --skip-data-analysis --data-dir data/processed/<your_exp> ^
+#     --output-dir outputs/complete_experiments
+
+# =============================================================================
+# SHARED — reproducibility, dataset, evaluation
+# =============================================================================
+
+reproducibility:
+  random_seed: 42
+
+data:
+  task: trajectory
+  generation:
+    case_file: smib/SMIB.json
+    use_pe_as_input: true
+    parameter_ranges:
+      H:
+      - 1.5
+      - 4.5
+      D:
+      - 0.5
+      - 2.5
+      Pm:
+      - 0.4
+      - 0.9
+    sampling_strategy: sobol
+    n_samples: 30
+    n_samples_per_combination: 6
+    use_cct_based_sampling: true
+    additional_clearing_time_offsets:
+    - -0.012
+    - -0.008
+    - -0.004
+    - 0.004
+    - 0.008
+    - 0.012
+    fault:
+      start_time: 1.0
+      bus: 3
+      reactance: 0.0001
+    simulation_time: 5.0
+    time_step: 0.002
+  validation:
+    physics_validation: true
+    strict_validation: false
+  preprocessing:
+    train_ratio: 0.7
+    val_ratio: 0.15
+    test_ratio: 0.15
+    stratify_by: scenario_id
+    filter_angles: true
+    max_angle_deg: 360.0
+    stability_threshold_deg: 180.0
+
+evaluation:
+  run_baselines: true
+  metrics:
+  - rmse
+  - mae
+  - r2
+
+# =============================================================================
+# PINN — network, optimization budget, composite loss (pinn_ml_fair_loss_tune.yaml)
+# =============================================================================
+#
+# model: YAML key must stay `model` (config["model"]).
+# training: ML also uses epochs & learning_rate; overrides WD / val patience under ml_baseline.
+# loss: lambda_physics is PINN-only; ML reads lambda_ic; ML overrides scale_to_norm in ml_baseline.
+
+# --- Network ---
+model:  # PINN MLP + I/O
+  input_method: pe_direct
+  use_pe_as_input: true
+  input_dim: 9
+  hidden_dims:
+  - 256
+  - 256
+  - 128
+  - 128
+  output_dim: 2
+  activation: tanh
+  use_residual: false
+  dropout: 0.1
+
+# --- Optimization & PINN checkpoints (angle limits are PINN trajectory training) ---
+training:
+  epochs: 300
+  batch_size: null
+  learning_rate: 0.001
+  weight_decay: 5e-5
+  device: auto
+  early_stopping_patience: 10
+  max_training_angle_degrees: 360.0
+  lambda_angle: 0.1
+  checkpoint_interval: null
+  save_best_only: true
+
+# --- Composite loss ---
+loss:
+  lambda_data: 1.0
+  lambda_physics: 0.5
+  lambda_ic: 10.0
+  lambda_steady_state: 2.0
+  use_fixed_lambda: true
+  use_normalized_loss: true
+  scale_to_norm:
+  - 20.0
+  - 1.0
+
+# =============================================================================
+# ML BASELINE — strong legacy recipe (smib_best_ml_baseline.yaml)
+# =============================================================================
+
+ml_baseline:
+  # I/O & architecture (overrides model.* for standard_nn)
+  input_method: pe_direct_7
+  hidden_dims:
+  - 256
+  - 256
+  - 128
+  - 128
+  dropout: 0.0
+
+  # Optimizer — overrides training.weight_decay for the ML path
+  weight_decay: 1.0e-5
+
+  # Target scaling — overrides loss.scale_to_norm for ML data prep / loss
+  scale_to_norm:
+  - 1.0
+  - 100.0
+  use_fixed_target_scale: false
+
+  # Supervised training controls
+  early_stopping_patience: 10
+  pre_fault_weight: 1.0
+  lambda_steady_state: 0.0
+  use_ic_over_prefault: false
+  two_phase_training: false
+  unstable_weight: 1.0

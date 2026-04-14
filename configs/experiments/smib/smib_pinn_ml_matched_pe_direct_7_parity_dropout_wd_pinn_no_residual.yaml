@@ -1,0 +1,145 @@
+# SMIB: Same as smib_pinn_ml_matched_pe_direct_7_parity_dropout_wd.yaml but PINN uses a plain MLP
+# (no residual shortcuts) to align backbone style with the standard NN baseline.
+#
+# Parity branch: parity/residual-backbone — Option A (ablate PINN residual)
+# Task doc: docs/publication/PARITY_BRANCH_TASKS_DELTA_FOCUS.md
+# Fair comparison context: docs/publication/PINN_ML_FAIR_COMPARISON_WORK_PLAN.md (§3.2)
+#
+# ML block is unchanged from the parity dropout/WD recipe. Only model.use_residual differs.
+#
+# Suggested PINN-only train (match val-gate PINN* lambda_physics = 0.5, frozen ML* partner for plumbing):
+#   python scripts/run_complete_experiment.py ^
+#     --config configs/experiments/smib/smib_pinn_ml_matched_pe_direct_7_parity_dropout_wd_pinn_no_residual.yaml ^
+#     --skip-data-generation --skip-data-analysis ^
+#     --data-dir data/processed/exp_20260211_190612 ^
+#     --output-dir outputs/expt_parity_pinn_no_residual ^
+#     --experiment-id pinn_nores_lp05 ^
+#     --skip-ml-baseline-training ^
+#     --ml-baseline-model-path outputs/campaign_indep_ml/ml_uw2_ow50/ml_baseline/standard_nn/model/model.pth ^
+#     --skip-comparison --skip-pinn-evaluation --skip-ml-baseline-evaluation ^
+#     --lambda-physics 0.5
+#
+# Then compare on test vs same ML* (see docs/publication/rerun_recipes/RERUN_SMIB_parity_pinn_no_residual_test.md).
+
+# =============================================================================
+# SHARED — reproducibility, dataset, evaluation
+# =============================================================================
+
+reproducibility:
+  random_seed: 42
+
+data:
+  task: trajectory
+  generation:
+    case_file: smib/SMIB.json
+    use_pe_as_input: true
+    parameter_ranges:
+      H:
+      - 1.5
+      - 4.5
+      D:
+      - 0.5
+      - 2.5
+      Pm:
+      - 0.4
+      - 0.9
+    sampling_strategy: sobol
+    n_samples: 30
+    n_samples_per_combination: 6
+    use_cct_based_sampling: true
+    additional_clearing_time_offsets:
+    - -0.012
+    - -0.008
+    - -0.004
+    - 0.004
+    - 0.008
+    - 0.012
+    fault:
+      start_time: 1.0
+      bus: 3
+      reactance: 0.0001
+    simulation_time: 5.0
+    time_step: 0.002
+  validation:
+    physics_validation: true
+    strict_validation: false
+  preprocessing:
+    train_ratio: 0.7
+    val_ratio: 0.15
+    test_ratio: 0.15
+    stratify_by: scenario_id
+    filter_angles: true
+    max_angle_deg: 360.0
+    stability_threshold_deg: 180.0
+
+evaluation:
+  run_baselines: true
+  metrics:
+  - rmse
+  - mae
+  - r2
+
+# =============================================================================
+# PINN — plain MLP (use_residual: false); same width / dropout as parity recipe
+# =============================================================================
+
+model:
+  input_method: pe_direct_7
+  use_pe_as_input: true
+  input_dim: 7
+  hidden_dims:
+  - 256
+  - 256
+  - 128
+  - 128
+  output_dim: 2
+  activation: tanh
+  use_residual: false
+  dropout: 0.1
+
+training:
+  epochs: 300
+  batch_size: null
+  learning_rate: 0.001
+  weight_decay: 5e-5
+  device: auto
+  early_stopping_patience: 10
+  max_training_angle_degrees: 360.0
+  lambda_angle: 0.1
+  checkpoint_interval: null
+  save_best_only: true
+
+loss:
+  lambda_data: 1.0
+  lambda_physics: 0.5
+  lambda_ic: 10.0
+  lambda_steady_state: 2.0
+  use_fixed_lambda: true
+  use_normalized_loss: true
+  scale_to_norm:
+  - 20.0
+  - 1.0
+
+# =============================================================================
+# ML BASELINE — matched dropout / weight_decay to PINN (unchanged from parity WD)
+# =============================================================================
+
+ml_baseline:
+  input_method: pe_direct_7
+  hidden_dims:
+  - 256
+  - 256
+  - 128
+  - 128
+  dropout: 0.1
+  weight_decay: 5.0e-5
+  scale_to_norm:
+  - 1.0
+  - 100.0
+  use_fixed_target_scale: false
+  early_stopping_patience: 10
+  pre_fault_weight: 1.0
+  lambda_steady_state: 0.0
+  use_ic_over_prefault: false
+  two_phase_training: false
+  unstable_weight: 3.0

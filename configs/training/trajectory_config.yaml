@@ -1,0 +1,27 @@
+# Configuration for Trajectory Prediction PINN Training
+
+model:
+  input_method: "reactance"  # "reactance" or "pe_direct"
+  input_dim: 11  # 11 for reactance, 7 for pe_direct
+  hidden_dims: [64, 64, 64, 64]
+  activation: tanh
+  dropout: 0.0
+  use_pe_as_input: false  # true = use Pe(t) input model, false = reactance model
+
+training:
+  batch_size: 32
+  num_epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.00001
+
+loss:
+  lambda_data: 1.0
+  lambda_physics: 0.1
+  lambda_ic: 10.0
+  lambda_boundary: 1.0
+  use_pe_direct: false  # true if input_method == "pe_direct"
+
+data:
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
