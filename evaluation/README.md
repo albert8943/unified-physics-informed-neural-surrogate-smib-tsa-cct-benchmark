@@ -34,17 +34,17 @@ The `evaluation/` module provides:
 - **Statistical Analysis** - Comprehensive statistical evaluation and reporting
 - **Scalability Analysis** - Assess performance on larger systems
 - **Comprehensive Evaluation** - End-to-end evaluation framework
-- **Statistical Validation** ⭐ **NEW** - Multiple runs with different seeds for reproducibility
-- **ML Baselines** ⭐ **NEW** - Standard NN and LSTM implementations without physics
-- **GENROU Validation** ⭐ **NEW** - Validate PINN trained on GENCLS against GENROU
-- **Energy Validation** ⭐ **NEW** - Energy-based physics consistency validation
-- **CCT Comparison** ⭐ **NEW** - CCT estimation comparison framework
-- **Failure Analysis** ⭐ **NEW** - Identify and analyze failure cases
-- **Speed Benchmarking** ⭐ **NEW** - Computational speed comparison
+- **Statistical validation** — repeated runs with different random seeds to assess variability and reproducibility
+- **ML baselines** — standard neural baselines (e.g. feedforward and LSTM) without physics-informed constraints
+- **GENROU validation** — checks for models trained with GENCLS-style data against higher-fidelity GENROU cases where applicable
+- **Energy validation** — transient-energy and related checks for physics consistency
+- **CCT comparison** — critical clearing time estimation compared across methods (e.g. PINN, analytical, simulation-backed)
+- **Failure analysis** — identification and study of high-error or near-instability scenarios
+- **Speed benchmarking** — inference and wall-clock comparisons between methods
 
 ## Module Files
 
-### **New Publication Frameworks** ⭐ **NEW**
+### **Additional evaluation components**
 
 #### `baselines/ml_baselines.py`
 **Purpose**: Standard ML baseline implementations (no physics constraints).
