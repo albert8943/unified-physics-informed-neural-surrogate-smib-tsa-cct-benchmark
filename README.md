@@ -8,6 +8,8 @@
 
 This repository is the **public reproduction bundle** for the IEEE Access SMIB study (minimal runnable code and documentation). **Processed trajectory splits are not stored in Git**; they are published on **Zenodo** (see below). Repository name / slug: `unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark` (see `dependency_versions.md`).
 
+**Canonical URLs:** **Code** — [`https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark`](https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark). **Tier 1 data (Zenodo)** — [`https://doi.org/10.5281/zenodo.19562416`](https://doi.org/10.5281/zenodo.19562416). Cite both the repository (URL + commit or release tag) and the dataset DOI together with the IEEE Access article when available.
+
 
 
 ## Scope boundary (Paper A vs larger development tree)

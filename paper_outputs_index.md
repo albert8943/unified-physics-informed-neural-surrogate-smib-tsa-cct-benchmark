@@ -2,6 +2,8 @@
 
 Maps **manuscript artifacts** (tables, figures, analyses) to **driver scripts**, **primary YAML**, **archived outputs** (paths as in the development repo / Zenodo tiers), and whether **ANDES** is required. LaTeX labels refer to `text/5_Results_and_Discussion.tex` in the IEEE Access template.
 
+**Publication links (this study):** public code — [`https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark`](https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark); Tier 1 splits — [`https://doi.org/10.5281/zenodo.19562416`](https://doi.org/10.5281/zenodo.19562416). The minimal GitHub tree is produced from the private monorepo via `public_reproduction/scripts/export_ieee_access_public_repo.ps1`; only paths listed here (plus transitive `scripts.*` imports) populate selective `scripts/` / `configs/` in the export — see `public_reproduction/MAINTAINERS_export_to_public_repo.md` in the **development** repository for the full maintainer workflow.
+
 **Primary config (PINN* parity, plain MLP):** `configs/experiments/smib/smib_pinn_ml_matched_pe_direct_7_parity_dropout_wd_pinn_no_residual.yaml`  
 **Processed split (Tier 1 Zenodo):** `data/processed/exp_20260211_190612/` (train/val/test CSVs)
 

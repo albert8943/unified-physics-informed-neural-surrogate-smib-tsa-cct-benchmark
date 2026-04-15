@@ -6,6 +6,8 @@ Record **exact** versions used for the **published numbers** where they differ f
 
 **`PAPER_TITLE_SLUG`:** `unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark`
 
+**Published public code (GitHub):** [`https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark`](https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark)
+
 Derived from the IEEE Access manuscript title (filesystem-safe, GitHub-safe length). If the name is taken on GitHub, append a short suffix (e.g. `-ieee-access-2026`) and update this file and the Data Availability Statement.
 
 ## Python

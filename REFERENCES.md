@@ -2,6 +2,8 @@
 
 This file is part of the **public reproduction** bundle. It points readers to **ANDES** (the simulator used for trajectory generation in the associated study) and to **representative work by Prof. Spyros Chatzivasileiadis** and collaborators in machine learning and data-driven power systems—listed here for **scholarly context** and **credit**. Inclusion does **not** imply that those authors endorse or maintain this repository.
 
+**This study’s code and frozen splits:** **GitHub** — [`https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark`](https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark); **Zenodo Tier 1** — [`https://doi.org/10.5281/zenodo.19562416`](https://doi.org/10.5281/zenodo.19562416).
+
 ---
 
 ## ANDES (simulation software)

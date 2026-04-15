@@ -18,7 +18,7 @@ All commands assume the **repository root** of the **public code repository** (t
 ## 1. Clone the public repository (Path A and Path B)
 
 ```bash
-git clone https://github.com/<your_github_user>/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark.git
+git clone https://github.com/albert8943/unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark.git
 cd unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark
 ```
 
