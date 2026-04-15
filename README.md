@@ -84,6 +84,8 @@ Applies to **Path B**. Reported **test** metrics use **validation-selected** che
 
 - **`dependency_versions.md`** — pinned Python, PyTorch (CPU), ANDES patch, seeds, threads, slug.
 
+- **`REFERENCES.md`** — **ANDES** upstream links (GitHub, documentation, TPWRS paper) and **Prof. Spyros Chatzivasileiadis** (DTU profiles + representative publications with DOIs).
+
 
 
 ## Citation
