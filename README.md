@@ -92,3 +92,9 @@ Applies to **Path B**. Reported **test** metrics use **validation-selected** che
 
 Cite **this repository** (URL + commit or release tag you used) together with the **Zenodo dataset** [`https://doi.org/10.5281/zenodo.19562416`](https://doi.org/10.5281/zenodo.19562416) and the IEEE Access article when available.
 
+
+
+## Development tools
+
+Parts of this repository were developed with **AI-assisted coding** using [Cursor](https://cursor.com) (including the editor-integrated language models it provides). All materials were **reviewed and curated by the authors**; the authors remain responsible for scientific claims, code correctness, reproducibility, and licensing of the contents of this repository. Any journal-specific disclosure of AI use in the **manuscript** should follow the venue’s author instructions in addition to this software note.
+
