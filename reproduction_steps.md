@@ -71,7 +71,7 @@ Path B alone does **not** re-run ANDES to rebuild Zenodo’s Tier 1 trajectories
 
 **Option 1 — Zenodo (recommended for paper-aligned splits):**
 
-1. Open the **Zenodo DOI** from the paper’s Data Availability Statement (placeholder: `https://doi.org/10.5281/zenodo.XXXXXXX`).
+1. Open the **Zenodo DOI** from the paper’s Data Availability Statement (`https://doi.org/10.5281/zenodo.19562416`).
 2. Download the `.zip` archive.
 3. Extract so that this path exists **relative to the repo root**:
 

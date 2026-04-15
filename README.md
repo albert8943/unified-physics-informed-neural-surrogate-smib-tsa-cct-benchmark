@@ -6,17 +6,17 @@
 
 
 
-This directory is **staging documentation** inside the development repository. The same files are intended to be copied to the root of the **separate public GitHub repository** named `unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark` (see `dependency_versions.md` for the slug). **Large frozen datasets are not stored in Git**; they are published on **Zenodo** (see below).
+This repository is the **public reproduction bundle** for the IEEE Access SMIB study (minimal runnable code and documentation). **Processed trajectory splits are not stored in Git**; they are published on **Zenodo** (see below). Repository name / slug: `unified-physics-informed-neural-surrogate-smib-tsa-cct-benchmark` (see `dependency_versions.md`).
 
 
 
-## Scope boundary (Paper A vs private monorepo)
+## Scope boundary (Paper A vs larger development tree)
 
-- **Public GitHub:** minimal runnable **Paper A** tree only (fresh history; no monorepo `.git`). See [`../MAINTAINERS_export_to_public_repo.md`](../MAINTAINERS_export_to_public_repo.md) for the copy list and pre-push checks.
+- **This repo (GitHub):** **Paper A** software and configs only (fresh history, no private monorepo). Scripts and YAML shipped here are selected for manuscript-linked reproduction (see `paper_outputs_index.md`).
 
-- **Public Zenodo:** **Tier 1** processed splits required for this paper’s Path B (see `dependency_versions.md`). Tier 2/3 are optional for auditing headline metrics.
+- **Zenodo:** **Tier 1** processed splits used for Path B in this paper (`dependency_versions.md`). Optional Tier 2/3 archives support headline-metric audits as described in the same file.
 
-- **Private:** the full **development monorepo** (all other code, data, `paper_writing/`, future experiments) is **not** pushed to the public GitHub remote; future papers use their own curated exports.
+- **Not included:** a larger private development repository (extra experiments, drafts, and full history) is **not** mirrored here; future papers may publish their own exports.
 
 
 
@@ -44,9 +44,9 @@ Reproduction follows the **same causal order as the study**: **Path A** (ANDES �
 
 |------|--------|--------|
 
-| **Code** (scripts, configs, packages) | **Public GitHub repository** (same slug as above; fresh history — see maintainer export guide) | **Fork or clone** for software |
+| **Code** (scripts, configs, packages) | **This GitHub repository** | **Fork or clone** for software |
 
-| **Data** (~237 MB Tier 1 processed splits, optional Tier 2 checkpoints, Tier 3 JSON) | **Zenodo** | **Download** when using **Path B** with paper-frozen splits (DOI in the Data Availability Statement; placeholder: `https://doi.org/10.5281/zenodo.XXXXXXX` — replace with your record) |
+| **Data** (~237 MB Tier 1 processed splits, optional Tier 2 checkpoints, Tier 3 JSON) | **Zenodo** | **Download** when using **Path B** with paper-frozen splits (DOI: `https://doi.org/10.5281/zenodo.19562416`) |
 
 
 
@@ -86,9 +86,7 @@ Applies to **Path B**. Reported **test** metrics use **validation-selected** che
 
 
 
-## Maintainer note
+## Citation
 
-
-
-Export instructions for creating the **separate public Git repo** (without monorepo history) live one level up: [`../MAINTAINERS_export_to_public_repo.md`](../MAINTAINERS_export_to_public_repo.md).
+Cite **this repository** (URL + commit or release tag you used) together with the **Zenodo dataset** [`https://doi.org/10.5281/zenodo.19562416`](https://doi.org/10.5281/zenodo.19562416) and the IEEE Access article when available.
 

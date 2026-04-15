@@ -42,7 +42,7 @@ Retraining with Tier 1 CSVs can yield **last-digit differences** in metrics vs t
 
 **Path A then Path B:** full ANDES regeneration (**Path A**) does **not** require Zenodo Tier 1 beforehand; **Path B** then trains on the new `data/processed/...` folder. If you compare Path A outputs to Zenodo Tier 1, expect only **scientific** agreement, not guaranteed numeric identity (see `README.md` and `reproduction_steps.md`).
 
-Placeholder DOI until published: `10.5281/zenodo.XXXXXXX` (replace in README and Data Availability Statement).
+Published dataset DOI: `10.5281/zenodo.19562416` (`https://doi.org/10.5281/zenodo.19562416`).
 
 ## Requirements files (public repo)
 
