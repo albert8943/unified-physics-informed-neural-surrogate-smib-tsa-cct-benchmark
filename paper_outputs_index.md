@@ -7,6 +7,7 @@ Maps **manuscript artifacts** (tables, figures, analyses) to **driver scripts**,
 
 | Manuscript focus | Script(s) | Config / inputs | Primary output(s) (examples) | Simulator? | Zenodo tier |
 |------------------|-----------|-----------------|------------------------------|--------------|-------------|
+| Path B retrain / full experiment (Track 1 in `reproduction_steps.md`) | `scripts/run_complete_experiment.py` | Primary YAML + `--data-dir` Tier 1 or Path A splits | under `outputs/` | PyTorch; ANDES only if data generation is not skipped | 1 + **2** |
 | Fair comparison test table, trajectory RMSE, paired \(p\) | `scripts/compare_models.py` | Headline PINN* / Std NN* checkpoints; test split CSVs | `outputs/expt_residual_backbone_retrain_20260407/compare_test/pinn_nores_vs_mlstar/comparison_results.json`; also `outputs/campaign_indep_final_test_20260406/comparison_results.json` | PyTorch if eval only | 1 + **2** |
 | Trajectory comparison PDFs | `scripts/compare_models.py` (regenerate) | same | `figures/trajectory_comparison/model_comparison_delta_{stable,unstable}.pdf` (manuscript paths) | PyTorch if from checkpoints | 2 |
 | SMIB stats table (per-scenario RMSE) | `scripts/compare_models.py` → JSON stats | same comparison JSON | `comparison_results.json` | PyTorch | 2 / 3 |
