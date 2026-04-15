@@ -1325,10 +1325,12 @@ def _train_ml_baseline(
             model_path = Path(args.ml_baseline_model_path)
             if model_path.exists():
                 print(f"[OK] Using existing ML baseline model: {model_path}")
-                # Infer model type from path
-                model_type = "standard_nn"  # Default
                 if "lstm" in str(model_path).lower():
-                    model_type = "lstm"
+                    raise ValueError(
+                        "LSTM baseline checkpoints are not supported. "
+                        "Use a standard_nn ML baseline checkpoint path with --ml-baseline-model-path."
+                    )
+                model_type = "standard_nn"
                 results[model_type] = {"model_path": str(model_path)}
                 return results
             else:
@@ -1345,6 +1347,11 @@ def _train_ml_baseline(
     models_to_train = args.ml_baseline_models
     if isinstance(models_to_train, str):
         models_to_train = [m.strip() for m in models_to_train.split(",")]
+    unsupported_ml = [m for m in models_to_train if m != "standard_nn"]
+    if unsupported_ml:
+        raise ValueError(
+            f"Unsupported ML baseline model(s): {unsupported_ml}. Only 'standard_nn' is supported."
+        )
 
     # Override epochs if specified
     epochs = args.ml_baseline_epochs or args.epochs or config.get("training", {}).get("epochs", 400)
@@ -1394,8 +1401,6 @@ def _train_ml_baseline(
             model_type=model_type,
             model_config={
                 "hidden_dims": hidden_dims,
-                "hidden_size": 128 if model_type == "lstm" else None,
-                "num_layers": 2 if model_type == "lstm" else None,
                 "activation": model_config_dict.get("activation", "tanh"),
                 "dropout": dropout,
             },

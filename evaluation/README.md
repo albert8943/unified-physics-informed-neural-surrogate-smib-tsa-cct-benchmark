@@ -35,7 +35,7 @@ The `evaluation/` module provides:
 - **Scalability Analysis** - Assess performance on larger systems
 - **Comprehensive Evaluation** - End-to-end evaluation framework
 - **Statistical validation** — repeated runs with different random seeds to assess variability and reproducibility
-- **ML baselines** — standard neural baselines (e.g. feedforward and LSTM) without physics-informed constraints
+- **ML baselines** — standard feedforward (MLP) baseline without physics-informed constraints
 - **GENROU validation** — checks for models trained with GENCLS-style data against higher-fidelity GENROU cases where applicable
 - **Energy validation** — transient-energy and related checks for physics consistency
 - **CCT comparison** — critical clearing time estimation compared across methods (e.g. PINN, analytical, simulation-backed)
@@ -51,15 +51,14 @@ The `evaluation/` module provides:
 
 **Key Classes**:
 - `StandardNN` - Feedforward neural network without physics
-- `LSTMModel` - LSTM model for sequence prediction
-- `MLBaselineTrainer` - Trainer for ML baseline models
+- `MLBaselineTrainer` - Trainer for the ML baseline model
 
 **Usage**:
 ```bash
-# Train ML baselines
+# Train ML baseline (feedforward / standard_nn)
 python scripts/train_ml_baselines.py \
     --data-path data/train_data.csv \
-    --models standard_nn lstm \
+    --models standard_nn \
     --epochs 400
 ```
 

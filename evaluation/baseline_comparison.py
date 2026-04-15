@@ -4,7 +4,7 @@ Baseline Comparison Methods for PINN Evaluation.
 This module implements baseline methods for comparing PINN performance:
 1. Equal Area Criterion (EAC) - Analytical method
 2. Traditional Time-Domain Simulation (TDS) - ANDES simulation
-3. Standard ML Approaches - LSTM, CNN, etc. without physics
+3. Standard ML approaches (e.g. CNN-style baselines in ``MLBaseline``) without physics
 """
 
 import sys
@@ -347,24 +347,25 @@ class TDSBaseline:
 
 class MLBaseline:
     """
-    Standard Machine Learning baseline (LSTM, CNN, etc.) without physics.
+    Lightweight ML baseline placeholder (CNN-style) without physics.
 
-    This provides a comparison with traditional ML approaches that don't
-    incorporate physics constraints.
+    Used by some demonstration / comparison helpers; the primary paper baseline
+    is the feedforward ``StandardNN`` trained via ``MLBaselineTrainer`` in
+    ``evaluation.baselines.ml_baselines``.
     """
 
-    def __init__(self, model_type: str = "LSTM", **model_kwargs):
+    def __init__(self, model_type: str = "CNN", **model_kwargs):
         """
         Initialize ML baseline.
 
         Parameters:
         -----------
         model_type : str
-            Model type: "LSTM", "CNN", "Transformer"
+            Model type: ``"CNN"`` (only CNN is implemented in this helper).
         **model_kwargs
             Additional model parameters
         """
-        self.name = "ML ({model_type})"
+        self.name = f"ML ({model_type})"
         self.method_type = "machine_learning"
         self.model_type = model_type
         self.model = None
@@ -372,32 +373,12 @@ class MLBaseline:
 
     def build_model(self, input_dim: int, output_dim: int = 2):
         """Build the ML model."""
-        if self.model_type == "LSTM":
-            self.model = self._build_lstm(input_dim, output_dim)
-        elif self.model_type == "CNN":
+        if self.model_type == "CNN":
             self.model = self._build_cnn(input_dim, output_dim)
         else:
-            raise ValueError("Unknown model type: {self.model_type}")
-
-    def _build_lstm(self, input_dim: int, output_dim: int) -> nn.Module:
-        """Build LSTM model."""
-        hidden_size = self.model_kwargs.get("hidden_size", 64)
-        num_layers = self.model_kwargs.get("num_layers", 2)
-
-        class LSTMModel(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.lstm = nn.LSTM(input_dim, hidden_size, num_layers, batch_first=True)
-                self.fc = nn.Linear(hidden_size, output_dim)
-
-            def forward(self, x: torch.Tensor) -> torch.Tensor:
-                # x shape: (batch, seq_len, features)
-                lstm_out, _ = self.lstm(x)
-                # Take last output
-                output = self.fc(lstm_out[:, -1, :])
-                return output
-
-        return LSTMModel()
+            raise ValueError(
+                f"Unknown model type: {self.model_type!r}. Use 'CNN' for this helper class."
+            )
 
     def _build_cnn(self, input_dim: int, output_dim: int) -> nn.Module:
         """Build CNN model."""
@@ -459,7 +440,7 @@ class BaselineComparator:
     Compares PINN performance against multiple baseline methods:
     - EAC (analytical)
     - TDS (simulation)
-    - ML baselines (LSTM, CNN, etc.)
+    - ML baselines (e.g. CNN helper in ``MLBaseline``)
     """
 
     def __init__(self):

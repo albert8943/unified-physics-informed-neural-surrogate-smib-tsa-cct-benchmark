@@ -1,5 +1,5 @@
 """
-Evaluate a trained ML baseline (StandardNN / LSTM) against GENROU reference trajectories.
+Evaluate a trained ML baseline (StandardNN) against GENROU reference trajectories.
 
 Uses the same ANDES GENROU simulation path as ``validate_pinn_on_genrou`` so PINN
 and ML numbers are directly comparable for a given scenario list.

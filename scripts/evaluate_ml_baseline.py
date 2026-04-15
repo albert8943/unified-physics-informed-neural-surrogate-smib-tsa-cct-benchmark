@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from evaluation.baselines.ml_baselines import MLBaselineTrainer, StandardNN, LSTMModel
+from evaluation.baselines.ml_baselines import MLBaselineTrainer, StandardNN
 from utils.metrics import compute_trajectory_metrics
 from utils.angle_filter import determine_stability_180deg
 from scripts.core.utils import generate_timestamped_filename
@@ -189,17 +189,11 @@ def load_ml_baseline_model(
             activation=model_config.get("activation", "tanh"),
             dropout=model_config.get("dropout", 0.0),
         )
-    elif model_type == "lstm":
-        input_dim = _ml_baseline_input_dim(input_method)
-        model = LSTMModel(
-            input_dim=input_dim,
-            hidden_size=model_config.get("hidden_size", 128),
-            num_layers=model_config.get("num_layers", 2),
-            output_dim=2,
-            dropout=model_config.get("dropout", 0.0),
-        )
     else:
-        raise ValueError(f"Unknown model type: {model_type}")
+        raise ValueError(
+            f"Unknown or unsupported ML baseline model type: {model_type!r}. "
+            "Only 'standard_nn' checkpoints are supported."
+        )
 
     # Load weights
     model.load_state_dict(checkpoint["model_state_dict"])
@@ -317,15 +311,9 @@ def predict_scenario_ml_baseline(
     # Convert to tensor
     X = torch.tensor(inputs_list, dtype=torch.float32, device=device)
 
-    # For LSTM, need to reshape to (batch, seq_len, features)
-    if isinstance(model, LSTMModel):
-        X = X.unsqueeze(1)  # (n_points, 1, features)
-
     # Make predictions
     with torch.no_grad():
         pred = model(X)
-        if isinstance(model, LSTMModel):
-            pred = pred.squeeze(1)  # Remove seq_len dimension if present
 
     # CRITICAL: Model outputs are in NORMALIZED space (after our fix)
     # We need to denormalize predictions to physical units for evaluation

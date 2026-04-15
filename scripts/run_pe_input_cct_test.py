@@ -72,7 +72,6 @@ import torch
 from scripts.compare_models import load_pinn_model  # noqa: E402
 from scripts.core.evaluation import _extract_and_normalize_scenario_data  # noqa: E402
 from scripts.evaluate_ml_baseline import load_ml_baseline_model  # noqa: E402
-from evaluation.baselines.ml_baselines import LSTMModel  # noqa: E402
 from utils.cct_binary_search import estimate_cct_binary_search  # noqa: E402
 from utils.normalization import denormalize_array, normalize_array  # noqa: E402
 from utils.pe_hypothetical_profile import pe_profile_for_hypothetical_clearing  # noqa: E402
@@ -267,12 +266,8 @@ class PeDirect7CCTWrapper:
         ]
 
         X = torch.tensor(rows, dtype=torch.float32, device=dev)
-        if isinstance(self.model, LSTMModel):
-            X = X.unsqueeze(1)
         with torch.no_grad():
             pred = self.model(X)
-            if isinstance(self.model, LSTMModel):
-                pred = pred.squeeze(1)
         dn = pred[:, 0].cpu().numpy()
         wn = pred[:, 1].cpu().numpy()
         if "delta_fixed_scale" in scalers and "omega_fixed_scale" in scalers:

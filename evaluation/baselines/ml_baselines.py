@@ -1,8 +1,7 @@
 """
 Standard ML Baselines (No Physics Constraints).
 
-Implements standard neural networks and LSTM models without physics constraints
-for comparison with PINN.
+Feedforward (MLP) baseline without physics constraints, for comparison with PINN.
 """
 
 import sys
@@ -95,86 +94,6 @@ class StandardNN(nn.Module):
         return self.network(x)
 
 
-class LSTMModel(nn.Module):
-    """
-    LSTM model for sequence prediction.
-
-    Takes time series input and predicts delta, omega trajectories.
-    """
-
-    def __init__(
-        self,
-        input_dim: int = 7,  # [t, delta0, omega0, H, D, Pload, Pe] or similar (Pload for load variation mode)
-        hidden_size: int = 128,
-        num_layers: int = 2,
-        output_dim: int = 2,
-        dropout: float = 0.0,
-    ):
-        """
-        Initialize LSTM model.
-
-        Parameters:
-        -----------
-        input_dim : int
-            Input feature dimension
-        hidden_size : int
-            LSTM hidden size
-        num_layers : int
-            Number of LSTM layers
-        output_dim : int
-            Output dimension (2 for delta, omega)
-        dropout : float
-            Dropout rate
-        """
-        super(LSTMModel, self).__init__()
-
-        self.input_dim = input_dim
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.output_dim = output_dim
-
-        # LSTM layer
-        self.lstm = nn.LSTM(
-            input_dim,
-            hidden_size,
-            num_layers,
-            batch_first=True,
-            dropout=dropout if num_layers > 1 else 0,
-        )
-
-        # Output layer
-        self.fc = nn.Linear(hidden_size, output_dim)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass.
-
-        Parameters:
-        -----------
-        x : torch.Tensor
-            Input tensor of shape (batch, seq_len, input_dim)
-            For point predictions, seq_len=1
-
-        Returns:
-        --------
-        output : torch.Tensor
-            Output tensor of shape (batch, output_dim)
-        """
-        # LSTM forward
-        lstm_out, _ = self.lstm(x)
-
-        # Take last output
-        if len(lstm_out.shape) == 3:
-            last_output = lstm_out[:, -1, :]  # (batch, hidden_size)
-        else:
-            last_output = lstm_out
-
-        # Fully connected layer
-        output = self.fc(last_output)
-
-        return output
-
-
 class MLBaselineTrainer:
     """
     Trainer for ML baseline models.
@@ -192,7 +111,7 @@ class MLBaselineTrainer:
         Parameters:
         -----------
         model_type : str
-            Model type: "standard_nn" or "lstm"
+            Model type: ``"standard_nn"`` (feedforward baseline)
         model_config : dict, optional
             Model configuration
         device : str
@@ -200,6 +119,10 @@ class MLBaselineTrainer:
         """
         self.model_type = model_type
         self.model_config = model_config or {}
+        if self.model_type != "standard_nn":
+            raise ValueError(
+                f"Unsupported ML baseline model_type {self.model_type!r}; only 'standard_nn' is supported."
+            )
         # Handle device selection
         if device == "auto":
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -530,12 +453,6 @@ class MLBaselineTrainer:
                 f"\n✓ Unstable-scenario upweighting: weight={unstable_weight} for {n_unstable} rows from unstable scenarios"
             )
 
-        # For LSTM, we need to reshape to (batch, seq_len, features)
-        # Since we're doing point predictions, seq_len=1
-        if self.model_type == "lstm":
-            X_train = X_train.unsqueeze(1)  # (batch, 1, features)
-            X_val = X_val.unsqueeze(1)
-
         # Adaptive batch size calculation for fair comparison with PINN
         # CRITICAL: PINN batches by scenarios (~6-8 batches/epoch)
         # ML baseline batches by rows, so we need to match effective gradient updates
@@ -639,16 +556,11 @@ class MLBaselineTrainer:
                 activation=self.model_config.get("activation", "tanh"),
                 dropout=self.model_config.get("dropout", 0.0),
             )
-        elif self.model_type == "lstm":
-            model = LSTMModel(
-                input_dim=input_dim,
-                hidden_size=self.model_config.get("hidden_size", 128),
-                num_layers=self.model_config.get("num_layers", 2),
-                output_dim=2,
-                dropout=self.model_config.get("dropout", 0.0),
-            )
         else:
-            raise ValueError(f"Unknown model type: {self.model_type}")
+            raise ValueError(
+                f"Unknown model type: {self.model_type!r}. "
+                "Only 'standard_nn' is supported for ML baselines in this release."
+            )
 
         return model.to(self.device)
 

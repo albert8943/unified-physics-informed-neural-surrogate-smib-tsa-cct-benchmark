@@ -64,8 +64,7 @@ class ComprehensiveEvaluator:
         # TDS baseline
         self.comparator.add_baseline("TDS", TDSBaseline())
 
-        # ML baselines
-        self.comparator.add_baseline("LSTM", MLBaseline(model_type="LSTM"))
+        # ML baselines (helper CNN baseline for demos; primary MLP baseline lives in ml_baselines)
         self.comparator.add_baseline("CNN", MLBaseline(model_type="CNN"))
 
     def evaluate_pinn_trajectory(

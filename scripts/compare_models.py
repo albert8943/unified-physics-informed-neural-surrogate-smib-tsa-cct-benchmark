@@ -60,7 +60,7 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-from evaluation.baselines.ml_baselines import StandardNN, LSTMModel
+from evaluation.baselines.ml_baselines import StandardNN
 from pinn.checkpoint_layout import infer_architecture_from_state_dict
 from pinn.trajectory_prediction import (
     TrajectoryPredictionPINN,
@@ -236,19 +236,11 @@ def load_ml_baseline_model(
             activation=model_config.get("activation", "tanh"),
             dropout=model_config.get("dropout", 0.0),
         )
-    elif model_type == "lstm":
-        input_dim = (
-            7 if input_method == "pe_direct_7" else (9 if input_method == "pe_direct" else 11)
-        )
-        model = LSTMModel(
-            input_dim=input_dim,
-            hidden_size=model_config.get("hidden_size", 128),
-            num_layers=model_config.get("num_layers", 2),
-            output_dim=2,
-            dropout=model_config.get("dropout", 0.0),
-        )
     else:
-        raise ValueError(f"Unknown model type: {model_type}")
+        raise ValueError(
+            f"Unknown or unsupported ML baseline model type: {model_type!r}. "
+            "Only 'standard_nn' checkpoints are supported."
+        )
 
     model.load_state_dict(checkpoint["model_state_dict"])
     model = model.to(device_torch)
@@ -521,13 +513,9 @@ def predict_scenario_ml_baseline(
         inputs_list.append(input_features)
 
     X = torch.tensor(inputs_list, dtype=torch.float32, device=device)
-    if isinstance(model, LSTMModel):
-        X = X.unsqueeze(1)
 
     with torch.no_grad():
         pred = model(X)
-        if isinstance(model, LSTMModel):
-            pred = pred.squeeze(1)
 
     # CRITICAL: Model outputs are in NORMALIZED space (after our fix)
     # We need to denormalize predictions to physical units for evaluation
